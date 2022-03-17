@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //any request need authorization! => 어떠한 요청도 authenticated 되야한다. 즉, 인증을 받아야 함!
         http
                 .authorizeRequests() // 요청
+                .antMatchers("/login").permitAll() // 로그인 페이지에는 모두가 접근 가능
                 .antMatchers("/user").hasRole("USER")
                 .antMatchers("/admin/pay").hasRole("ADMIN") // 앞의 경로가 같으면 구체적인게 반드시 앞에 와야한다.
                 .antMatchers("/admin/**").access("hasRole('ADMIN') or hasRole('SYS')")
@@ -122,7 +123,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         response.sendRedirect("/denied");
                     }
                 });
-
-        //현재 위에서 설정된 경로에 대해서는 사용자 모두는 인증을 받지 않아도 접근이 가능하다.
     }
 }
