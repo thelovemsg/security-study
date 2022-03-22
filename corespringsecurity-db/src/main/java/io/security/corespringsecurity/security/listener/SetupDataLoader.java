@@ -6,6 +6,7 @@ import io.security.corespringsecurity.domain.entity.Role;
 import io.security.corespringsecurity.repository.ResourcesRepository;
 import io.security.corespringsecurity.repository.RoleRepository;
 import io.security.corespringsecurity.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -18,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
+@Slf4j
 public class SetupDataLoader implements ApplicationListener<ContextRefreshedEvent> {
 
     private boolean alreadySetup = false;
@@ -111,6 +113,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     public Resources createResourceIfNotFound(String resourceName, String httpMethod, Set<Role> roleSet, String resourceType) {
         Resources resources = resourcesRepository.findByResourceNameAndHttpMethod(resourceName, httpMethod);
 
+
         if (resources == null) {
             resources = Resources.builder()
                     .resourceName(resourceName)
@@ -120,6 +123,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
                     .orderNum(count.incrementAndGet())
                     .build();
         }
+        log.info("resources checking ... {} - {}", resources.toString(), "createResourceIfNotFound");
         return resourcesRepository.save(resources);
     }
 }
