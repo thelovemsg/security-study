@@ -1,20 +1,25 @@
 package springinflearnstudy.study.security.configs;
 
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import springinflearnstudy.study.security.provider.CustomAuthenticationProvider;
+import springinflearnstudy.study.security.service.CustomUserDetailsService;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -30,7 +35,12 @@ public class SecurityConfig {
                             .antMatchers("/messages").hasRole("MANAGER")
                             .antMatchers("/config").hasRole("ADMIN")
                             .anyRequest().authenticated();
-                }).formLogin();
+
+                }).formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login_proc")
+                .defaultSuccessUrl("/")
+                .permitAll();
 
         return http.build();
     }
@@ -41,15 +51,26 @@ public class SecurityConfig {
         return (web) -> web.ignoring().antMatchers("/resources/**");
     }
 
+    /*Explanation:
+    In the old version you inject AuthenticationManagerBuilder, set userDetailsService, passwordEncoder and build it.
+    But authenticationManager is already created in this step.
+    It is created the way we wanted (with userDetailsService and the passwordEncoder).
+    https://stackoverflow.com/questions/72381114/spring-security-upgrading-the-deprecated-websecurityconfigureradapter-in-spring
+    */
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        String password = passwordEncoder().encode("1111");
-        User.UserBuilder users = User.builder();
-        UserDetails user = users.username("user").password(password).roles("USER").build();
-        UserDetails manager = users.username("manager").password(password).roles("MANAGER").build();
-        UserDetails admin = users.username("admin").password(password).roles("ADMIN").build();
-        return new InMemoryUserDetailsManager(user, manager, admin);
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    CustomUserDetailsService customUserDetailsService() {
+        return new CustomUserDetailsService();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return new CustomAuthenticationProvider();
     }
 
 }
