@@ -41,8 +41,12 @@ public class SecurityConfig {
                 }).formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/login_proc")
+<<<<<<< HEAD
                 .defaultSuccessUrl("/")
                 .successHandler(authenticationSuccessHandler)
+=======
+                .defaultSuccessUrl("/",true)
+>>>>>>> afb749fe9379e3ce2443b54c3805d99df3b6fcd4
                 .permitAll();
 
         return http.build();
