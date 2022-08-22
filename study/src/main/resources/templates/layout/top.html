@@ -7,16 +7,18 @@
             <a class="text-light" href="#"><h4>Core Spring Security</h4></a>
             <ul class="nav justify-content-end">
                 <li class="nav-item" sec:authorize="isAnonymous()"><a class="nav-link text-light" th:href="@{/login}">로그인</a></li>
-<<<<<<< HEAD
                 <li class="nav-item" sec:authorize="isAnonymous()"><a class="nav-link text-light" th:href="@{/users}">회원가입</a></li>
                 <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link text-light" th:href="@{/logout}">로그아웃</a></li>
-=======
-                <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link text-light" th:href="@{/logout}">로그아웃</a></li>
-                <li class="nav-item" sec:authorize="isAnonymous()"><a class="nav-link text-light" th:href="@{/users}">회원가입</a></li>
->>>>>>> afb749fe9379e3ce2443b54c3805d99df3b6fcd4
                 <li class="nav-item" ><a class="nav-link text-light" href="/">HOME</a></li>
             </ul>
         </div>
     </nav>
+    <div style="padding-top:50px;" class="col">
+        <div class="container text-center">
+            <h1><span th:text="${username}" class="alert alert-danger">접근 권한 제한</span></h1>
+            <br />
+            <h3 th:text="${exception}"></h3>
+        </div>
+    </div>
 </div>
 </html>
